@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ALBION RADAR | V6.5 FINAL CONTROL</title>
+    <title>ALBION RADAR | V6.6 LEGACY CONTROL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -19,39 +19,37 @@
 </head>
 <body class="font-sans">
 
-    <div class="dev-banner">🚀 V6.5: TAM KAYNAK LİSTESİ + TOPLU SEÇİM SİSTEMİ AKTİF</div>
+    <div class="dev-banner">🚀 V6.6: OUTPOST VE CHEST SİSTEMİ GÜNCELLENDİ</div>
 
     <div class="max-w-7xl mx-auto p-4 md:p-8">
         <header class="mb-6 text-center">
             <h1 class="text-3xl font-bold text-amber-500 mb-1 font-serif">⚔️ Albion Objective Tracker</h1>
-            <p class="text-[10px] text-slate-500 uppercase tracking-[0.3em] font-bold">Comprehensive Resource Command</p>
+            <p class="text-[10px] text-slate-500 uppercase tracking-[0.3em] font-bold">Tactical Resource & Logistics Center</p>
         </header>
 
         <div id="route-display" class="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4 hidden">
-            <div class="col-span-full border-b border-slate-700 pb-2 mb-2 text-blue-400 text-xs font-bold uppercase tracking-widest flex items-center gap-2">
-                🧭 Önerilen Harekat Planı
-            </div>
+            <div class="col-span-full border-b border-slate-700 pb-2 mb-2 text-blue-400 text-xs font-bold uppercase tracking-widest">🧭 Önerilen Harekat Planı</div>
         </div>
 
         <div class="glass-panel p-6 rounded-xl mb-6 border-t-4 border-t-amber-600 shadow-2xl">
             <form id="radar-form" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
                 <div>
                     <label class="block mb-1 text-[10px] text-slate-400 uppercase font-bold">İçerik (Objective)</label>
-                    <input type="text" id="in_isim" list="full-obj-list" placeholder="8.4 Hide" required class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white text-sm outline-none focus:border-amber-500">
+                    <input type="text" id="in_isim" list="full-obj-list" placeholder="Objektif seç..." required class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white text-sm outline-none focus:border-amber-500">
                 </div>
                 <div>
                     <label class="block mb-1 text-[10px] text-slate-400 uppercase font-bold">Harita (Map)</label>
-                    <input type="text" id="in_harita" list="map-list" oninput="autoDetect()" placeholder="Harita adı..." required class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white text-sm outline-none focus:border-amber-500">
+                    <input type="text" id="in_harita" list="map-list" oninput="autoDetect()" placeholder="Harita seç..." required class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white text-sm outline-none focus:border-amber-500">
                 </div>
                 <div>
                     <label class="block mb-1 text-[10px] text-amber-500 uppercase font-bold">Mesafe (Nodes)</label>
-                    <input type="number" id="in_mesafe" placeholder="Map Sayısı" min="1" class="w-full bg-slate-900 border border-amber-600/50 rounded p-2 text-white text-sm font-bold outline-none">
+                    <input type="number" id="in_mesafe" placeholder="Otomatik/Manuel" min="1" class="w-full bg-slate-900 border border-amber-600/50 rounded p-2 text-white text-sm font-bold outline-none">
                 </div>
                 <div>
                     <label class="block mb-1 text-[10px] text-slate-400 uppercase font-bold">Dakika Kaldı</label>
                     <input type="number" id="in_dakika" required class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white text-sm outline-none">
                 </div>
-                <button type="submit" id="btn_submit" class="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 rounded h-[38px] text-sm uppercase shadow-lg transition-all">İşle</button>
+                <button type="submit" id="btn_submit" class="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 rounded h-[38px] text-sm uppercase transition-all shadow-lg">Ekle</button>
             </form>
         </div>
 
@@ -66,10 +64,10 @@
                     <thead>
                         <tr class="text-slate-500 text-[10px] uppercase font-bold border-b border-slate-700">
                             <th class="p-3 w-10 text-center"><input type="checkbox" id="select-all" onclick="toggleAll(this)"></th>
-                            <th class="p-3">İçerik</th>
+                            <th class="p-3">Objektif</th>
                             <th class="p-3">Harita</th>
                             <th class="p-3 text-amber-500 text-center">Uzaklık</th>
-                            <th class="p-3">Kalan Süre</th>
+                            <th class="p-3">Zaman</th>
                             <th class="p-3 text-right">İşlem</th>
                         </tr>
                     </thead>
@@ -80,19 +78,20 @@
     </div>
 
     <datalist id="full-obj-list">
+        <option value="Green Outpost"></option><option value="Blue Outpost"></option><option value="Purple Outpost"></option><option value="Legendary Outpost"></option>
+        <option value="Small Chest"></option><option value="Medium Chest"></option><option value="Large Chest"></option>
         <option value="4.4 Hide"></option><option value="5.4 Hide"></option><option value="6.4 Hide"></option><option value="7.4 Hide"></option><option value="8.4 Hide"></option>
         <option value="4.4 Ore"></option><option value="5.4 Ore"></option><option value="6.4 Ore"></option><option value="7.4 Ore"></option><option value="8.4 Ore"></option>
         <option value="4.4 Wood"></option><option value="5.4 Wood"></option><option value="6.4 Wood"></option><option value="7.4 Wood"></option><option value="8.4 Wood"></option>
         <option value="4.4 Fiber"></option><option value="5.4 Fiber"></option><option value="6.4 Fiber"></option><option value="7.4 Fiber"></option><option value="8.4 Fiber"></option>
         <option value="Green Core"></option><option value="Blue Core"></option><option value="Purple Core"></option><option value="Legendary Core"></option>
         <option value="Green Vortex"></option><option value="Blue Vortex"></option><option value="Purple Vortex"></option><option value="Legendary Vortex"></option>
-        <option value="Small Outpost"></option><option value="Medium Outpost"></option><option value="Large Outpost"></option>
     </datalist>
 
     <datalist id="map-list">
         <option value="Mudfoot Sump"></option><option value="Windgrass Border"></option><option value="Windgrass Precipice"></option><option value="Windgrass Gully"></option><option value="Windgrass Rill"></option>
         <option value="Windgrass Fields"></option><option value="Cathedral of Light"></option><option value="Bleachskull Steppe"></option><option value="Windgrass Coast"></option><option value="Frostbite Mountain"></option>
-        <option value="Gravemound Brim"></option><option value="Highstone Grassland"></option><option value="Bleachskull Desert"></option><option value="Sandmount Desert"></option><option value="Frostbite Chasm"></option><option value="Westweald Thicket"></option>
+        <option value="Gravemound Brim"></option><option value="Highstone Grassland"></option><option value="Bleachskull Desert"></option><option value="Sandmount Desert"></option><option value="Frostbite Chasm"></option>
         <option value="Gravemound Cliffs"></option><option value="Highstone Plateau"></option><option value="Sandmount Esker"></option><option value="Westweald Shore"></option>
         <option value="Sandmount Strand"></option><option value="Sandmount Ascent"></option><option value="Avalanche Incline"></option>
     </datalist>
@@ -103,11 +102,10 @@
         const sb = supabase.createClient(S_URL, S_KEY);
         const TABLE = 'albion_content_tracker_deneme';
 
-        // GÜNCEL NAVİGASYON VERİLERİ
         const MAP_GRAPH = {
             "Mudfoot Sump": 1, "Windgrass Border": 1, "Windgrass Precipice": 1, "Windgrass Gully": 1, "Windgrass Rill": 1,
             "Windgrass Fields": 2, "Cathedral of Light": 2, "Bleachskull Steppe": 2, "Windgrass Coast": 2, "Frostbite Mountain": 2,
-            "Gravemound Brim": 3, "Highstone Grassland": 3, "Bleachskull Desert": 3, "Sandmount Desert": 3, "Frostbite Chasm": 3, "Westweald Thicket": 3,
+            "Gravemound Brim": 3, "Highstone Grassland": 3, "Bleachskull Desert": 3, "Sandmount Desert": 3, "Frostbite Chasm": 3,
             "Gravemound Cliffs": 4, "Highstone Plateau": 4, "Sandmount Esker": 4, "Westweald Shore": 4,
             "Sandmount Strand": 5, "Sandmount Ascent": 6, "Avalanche Incline": 7
         };
@@ -168,14 +166,14 @@
         }
 
         async function bulkDelete() {
-            if (!confirm(`${selectedIds.size} hedef siliyorum?`)) return;
+            if (!confirm(`${selectedIds.size} hedef silinsin mi?`)) return;
             await sb.from(TABLE).delete().in('id', Array.from(selectedIds));
             selectedIds.clear(); load();
         }
 
         function updateNavigation() {
             const display = document.getElementById('route-display');
-            display.innerHTML = '<div class="col-span-full border-b border-slate-700 pb-2 mb-2 text-blue-400 text-xs font-bold uppercase tracking-widest flex items-center gap-2">🧭 Önerilen Harekat Planı</div>';
+            display.innerHTML = '<div class="col-span-full border-b border-slate-700 pb-2 mb-2 text-blue-400 text-xs font-bold uppercase tracking-widest">🧭 Önerilen Harekat Planı</div>';
             
             const recommendations = items.filter(i => {
                 const nodeCount = MAP_GRAPH[i.harita] || 3;
@@ -216,7 +214,7 @@
 
             await sb.from(TABLE).insert([payload]);
             e.target.reset(); load();
-            btn.innerText = "İşle"; btn.disabled = false;
+            btn.innerText = "Ekle"; btn.disabled = false;
         });
 
         async function del(id) { await sb.from(TABLE).delete().eq('id', id); selectedIds.delete(id); load(); }
