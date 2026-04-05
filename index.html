@@ -3,69 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ALBION RADAR | V5.6 AUTO-CLEAN</title>
+    <title>ALBION RADAR | V5.8 BULK ACTIONS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { background-color: #0f172a; color: #cbd5e1; margin: 0; }
         .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid #334155; }
-        .priority-row { border-left: 4px solid #f59e0b; }
-        .expired-row { opacity: 0.2; grayscale: 1; pointer-events: none; } /* Süresi bitenleri iyice karartır */
+        .priority-row { border-left: 4px solid #f59e0b; transition: all 0.2s; }
+        .priority-row:hover { background: rgba(245, 158, 11, 0.05); }
+        .selected-row { background: rgba(59, 130, 246, 0.1) !important; border-left-color: #3b82f6 !important; }
         .dev-banner { background-color: #0369a1; color: white; text-align: center; font-size: 0.75rem; padding: 0.25rem; font-weight: bold; }
+        input[type="checkbox"] { cursor: pointer; accent-color: #f59e0b; width: 16px; height: 16px; }
+        ::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
     </style>
 </head>
 <body class="font-sans">
 
-    <div class="dev-banner">🚀 V5.6: SÜRESİ BİTENLER OTOMATİK GİZLENİR</div>
+    <div class="dev-banner">🚀 V5.8: TOPLU SEÇİM VE SİLME SİSTEMİ AKTİF</div>
 
     <div class="max-w-7xl mx-auto p-4 md:p-8">
         <header class="mb-8 text-center">
             <h1 class="text-3xl font-bold text-amber-500 mb-2">⚔️ Albion Objective Tracker</h1>
-            <p class="text-xs text-slate-500 uppercase tracking-widest font-bold">Auto-Cleaning Command Center</p>
+            <p class="text-xs text-slate-500 uppercase tracking-widest font-bold">Tactical Command & Bulk Control</p>
         </header>
 
-        <div class="glass-panel p-6 rounded-xl mb-8 border-t-4 border-t-amber-600 shadow-2xl">
+        <div class="glass-panel p-6 rounded-xl mb-6 border-t-4 border-t-amber-600 shadow-2xl">
             <form id="radar-form" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
                 <div>
                     <label class="block mb-1 text-[10px] text-slate-400 uppercase font-bold">İçerik</label>
-                    <input type="text" id="in_isim" list="obj-list" placeholder="8.4 Hide" required class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white text-sm outline-none">
+                    <input type="text" id="in_isim" list="obj-list" placeholder="8.4 Hide" required class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white text-sm outline-none focus:border-amber-500">
                 </div>
                 <div>
                     <label class="block mb-1 text-[10px] text-slate-400 uppercase font-bold">Harita</label>
-                    <input type="text" id="in_harita" list="comprehensive-maps" oninput="autoDetect()" placeholder="Harita adı..." required class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white text-sm outline-none">
+                    <input type="text" id="in_harita" list="omni-map-list" oninput="autoDetect()" placeholder="Harita adı..." required class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white text-sm outline-none focus:border-amber-500">
                 </div>
                 <div>
-                    <label class="block mb-1 text-[10px] text-amber-500 uppercase font-bold">Uzaklık (Nodes)</label>
-                    <input type="number" id="in_mesafe" placeholder="Map" min="1" class="w-full bg-slate-900 border border-amber-600/50 rounded p-2 text-white text-sm font-bold outline-none">
+                    <label class="block mb-1 text-[10px] text-amber-500 uppercase font-bold">Mesafe</label>
+                    <input type="number" id="in_mesafe" placeholder="Nodes" min="1" class="w-full bg-slate-900 border border-amber-600/50 rounded p-2 text-white text-sm font-bold outline-none">
                 </div>
                 <div>
                     <label class="block mb-1 text-[10px] text-slate-400 uppercase font-bold">Dakika</label>
                     <input type="number" id="in_dakika" placeholder="45" required class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white text-sm outline-none">
                 </div>
-                <button type="submit" id="btn_submit" class="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 rounded h-[38px] text-sm uppercase transition-all shadow-lg">İşle</button>
+                <button type="submit" id="btn_submit" class="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 rounded h-[38px] text-sm uppercase transition-all shadow-lg">Ekle</button>
             </form>
+        </div>
+
+        <div id="bulk-controls" class="mb-4 flex items-center justify-between bg-blue-900/20 border border-blue-500/30 p-3 rounded-lg hidden transition-all">
+            <div class="text-sm text-blue-300 font-bold">
+                <span id="selected-count">0</span> objektif seçildi
+            </div>
+            <button onclick="bulkDelete()" class="bg-red-600 hover:bg-red-500 text-white text-xs font-bold px-4 py-2 rounded uppercase transition-all shadow-lg">
+                Seçilenleri Sil
+            </button>
         </div>
 
         <div class="glass-panel p-4 rounded-xl shadow-lg">
             <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm">
+                <table class="w-full text-left text-sm border-separate border-spacing-y-1">
                     <thead>
-                        <tr class="border-b border-slate-700 text-slate-500 text-[10px] uppercase font-bold">
-                            <th class="p-3">İçerik</th><th class="p-3">Harita</th><th class="p-3 text-amber-500">Mesafe</th><th class="p-3">Kalan</th><th class="p-3 text-right">İşlem</th>
+                        <tr class="text-slate-500 text-[10px] uppercase font-bold">
+                            <th class="p-3 w-10"><input type="checkbox" id="select-all" onclick="toggleAll(this)"></th>
+                            <th class="p-3">İçerik</th>
+                            <th class="p-3">Harita</th>
+                            <th class="p-3 text-amber-500">Mesafe</th>
+                            <th class="p-3">Kalan</th>
+                            <th class="p-3 text-right">İşlem</th>
                         </tr>
                     </thead>
-                    <tbody id="list-body"></tbody>
+                    <tbody id="list-body">
+                        <tr><td colspan="6" class="text-center p-12 text-slate-600 italic">Yükleniyor...</td></tr>
+                    </tbody>
                 </table>
             </div>
         </div>
     </div>
 
     <datalist id="obj-list">
-        <option value="4.4 Hide"></option><option value="8.4 Hide"></option><option value="Purple Core"></option><option value="Legendary Vortex"></option>
+        <option value="4.4 Hide"></option><option value="8.4 Hide"></option><option value="Purple Core"></option><option value="Legendary Vortex"></option><option value="Large Outpost"></option>
     </datalist>
-    <datalist id="comprehensive-maps">
-        <option value="Windgrass Gully"></option><option value="Windgrass Rill"></option><option value="Swiftwater Basin"></option>
-        </datalist>
+    <datalist id="omni-map-list">
+        <option value="Windgrass Border"></option><option value="Windgrass Gully"></option><option value="Windgrass Rill"></option>
+        <option value="Swiftwater Basin"></option><option value="Gravemound Cliffs"></option><option value="Sandmount Ascent"></option>
+        <option value="Avalanche Incline"></option><option value="Arthur's Rest"></option>
+    </datalist>
 
     <script>
         const S_URL = 'https://wbrpssjxzfxiyhwibked.supabase.co';
@@ -73,50 +94,86 @@
         const sb = supabase.createClient(S_URL, S_KEY);
         const TABLE = 'albion_content_tracker_deneme';
 
+        const PRESETS = {
+            "Grave of Memory": 1, "Mudfoot Sump": 1, "Windgrass Border": 1,
+            "Gravemound Cliffs": 4, "Sandmount Ascent": 6, "Avalanche Incline": 7
+        };
+
+        let items = [];
+        let selectedIds = new Set();
+
+        function autoDetect() {
+            const map = document.getElementById('in_harita').value;
+            if (PRESETS[map]) document.getElementById('in_mesafe').value = PRESETS[map];
+        }
+
         async function load() {
             try {
                 const { data, error } = await sb.from(TABLE).select('*');
                 if (error) throw error;
-                
-                // KRİTİK GÜNCELLEME: Sadece süresi bitmemiş olanları filtrele
-                const now = new Date();
-                const activeItems = data.filter(i => new Date(i.bitis_zamani) > now);
-                
-                // Süresi bitenleri veritabanından da temizlemek istersen buraya otomatik delete eklenebilir.
-                // Şimdilik sadece listeden gizliyoruz.
-                
-                items = activeItems.sort((a, b) => new Date(a.bitis_zamani) - new Date(b.bitis_zamani));
+                items = data.sort((a, b) => new Date(a.bitis_zamani) - new Date(b.bitis_zamani));
                 render();
             } catch (e) { console.error(e); }
         }
 
-        // Diğer render, del ve submit fonksiyonları V5.5 ile aynı...
-        // Sadece render kısmında "Sil" butonunun her zaman aktif olmasını sağladım.
-
         function render() {
             const body = document.getElementById('list-body');
             body.innerHTML = '';
+            
             items.forEach(i => {
+                const node = PRESETS[i.harita] || 3;
                 const left = (new Date(i.bitis_zamani) - new Date()) / 60000;
+                const isSelected = selectedIds.has(i.id);
+                
                 const tr = document.createElement('tr');
-                tr.className = "border-b border-slate-800/50 priority-row bg-amber-900/5";
+                tr.className = `priority-row bg-slate-800/30 ${isSelected ? 'selected-row' : ''}`;
                 tr.innerHTML = `
-                    <td class="p-3 font-bold text-white">${i.isim}</td>
-                    <td class="p-3 text-slate-400">${i.harita}</td>
-                    <td class="p-3 text-amber-500 text-[10px] font-bold italic">📍 Manuel/Auto</td>
-                    <td class="p-3 font-mono text-amber-500">${Math.floor(left)}dk kaldı</td>
-                    <td class="p-3 text-right">
-                        <button onclick="del(${i.id})" class="text-red-500 text-[10px] font-bold hover:underline bg-red-500/10 px-2 py-1 rounded">KESİN SİL</button>
-                    </td>
+                    <td class="p-3"><input type="checkbox" class="target-check" data-id="${i.id}" ${isSelected ? 'checked' : ''} onchange="toggleSelect(${i.id}, this)"></td>
+                    <td class="p-3 font-bold text-white uppercase text-xs">${i.isim}</td>
+                    <td class="p-3 text-slate-400 text-xs">${i.harita}</td>
+                    <td class="p-3 text-amber-500 text-[10px] font-bold">📍 ${node} Map</td>
+                    <td class="p-3 font-mono text-amber-500 text-xs">${left > 0 ? Math.floor(left) + 'dk' : 'BİTTİ'}</td>
+                    <td class="p-3 text-right"><button onclick="del(${i.id})" class="text-red-500/50 hover:text-red-500 text-[10px] uppercase font-bold">Sil</button></td>
                 `;
                 body.appendChild(tr);
             });
+            updateBulkUI();
         }
 
-        async function del(id) {
-            // Silme işlemini onaysız ve direkt yapacak şekilde hızlandırdım
-            const { error } = await sb.from(TABLE).delete().eq('id', id);
-            if (!error) load();
+        // SEÇİM FONKSİYONLARI
+        function toggleSelect(id, el) {
+            if (el.checked) selectedIds.add(id);
+            else selectedIds.delete(id);
+            render(); // Satır rengini güncellemek için
+        }
+
+        function toggleAll(el) {
+            selectedIds.clear();
+            if (el.checked) items.forEach(i => selectedIds.add(i.id));
+            render();
+        }
+
+        function updateBulkUI() {
+            const ctrl = document.getElementById('bulk-controls');
+            const count = document.getElementById('selected-count');
+            if (selectedIds.size > 0) {
+                ctrl.classList.remove('hidden');
+                count.innerText = selectedIds.size;
+            } else {
+                ctrl.classList.add('hidden');
+            }
+        }
+
+        // TOPLU SİLME
+        async function bulkDelete() {
+            if (!confirm(`${selectedIds.size} adet objektifi silmek istediğine emin misin?`)) return;
+            const idsToDelete = Array.from(selectedIds);
+            const { error } = await sb.from(TABLE).delete().in('id', idsToDelete);
+            if (!error) {
+                selectedIds.clear();
+                document.getElementById('select-all').checked = false;
+                load();
+            }
         }
 
         document.getElementById('radar-form').addEventListener('submit', async (e) => {
@@ -131,7 +188,13 @@
             load();
         });
 
-        setInterval(load, 15000); // 15 saniyede bir otomatik temizlik yapar
+        async function del(id) {
+            await sb.from(TABLE).delete().eq('id', id);
+            selectedIds.delete(id);
+            load();
+        }
+
+        setInterval(load, 30000);
         load();
     </script>
 </body>
