@@ -173,7 +173,7 @@
 
         function updateNavigation() {
             const display = document.getElementById('route-display');
-            display.innerHTML = '<div class="col-span-full border-b border-slate-700 pb-2 mb-2 text-blue-400 text-xs font-bold uppercase tracking-widest">🧭 Önerilen Harekat Planı</div>';
+            display.innerHTML = '<div class="col-span-full border-b border-slate-700 pb-2 mb-2 text-blue-400 text-xs font-bold uppercase tracking-widest">🧭 Önerilen Rota </div>';
             
             const recommendations = items.filter(i => {
                 const nodeCount = MAP_GRAPH[i.harita] || 3;
