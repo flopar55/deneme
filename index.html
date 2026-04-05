@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TEST ORTAMI | Albion Radar V3.1</title>
+    <title>TEST ORTAMI | Albion Radar V3.2</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -15,15 +14,15 @@
             border-radius: 0.25rem; cursor: pointer; margin-right: 1rem; transition: background-color 0.2s;
         }
         input[type="file"]::file-selector-button:hover { background-color: #475569; }
-        select { color-scheme: dark; }
-        option { background-color: #1e293b; color: white; }
-        /* Test ortamı olduğunu belli eden kırmızı uyarı şeridi */
         .dev-banner { background-color: #b91c1c; color: white; text-align: center; font-size: 0.75rem; padding: 0.25rem; font-weight: bold; letter-spacing: 1px;}
+        
+        /* Datalist (Otomatik Tamamlama) kutularının ikonlarını beyaz yapma */
+        ::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
     </style>
 </head>
 <body class="font-sans">
 
-    <div class="dev-banner">⚠️ STAGING / TEST ORTAMI - BURAYA GİRİLEN VERİLER CANLI SİSTEMİ ETKİLEMEZ ⚠️</div>
+    <div class="dev-banner">⚠️ STAGING / TEST ORTAMI - AKILLI ARAMA (AUTOCOMPLETE) AKTİF ⚠️</div>
 
     <input type="file" id="hidden-image-input" accept="image/*" class="hidden" onchange="handleImageUpdate(event)">
 
@@ -45,62 +44,84 @@
                 <div>
                     <label class="block mb-1">
                         <span class="text-xs text-slate-300">Objektif Türü</span>
-                        <span class="block text-[10px] text-slate-500">Objective Type</span>
+                        <span class="block text-[10px] text-slate-500">Yaz veya Seç / Type to search</span>
                     </label>
-                    <select id="isim" required class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white focus:border-amber-500 outline-none cursor-pointer">
-                        <option value="" disabled selected>Seçiniz / Select</option>
-                        <optgroup label="Sandıklar / Chests">
-                            <option value="Altın Sandık / Gold Chest">Altın Sandık (Gold)</option>
-                            <option value="Gümüş Sandık / Silver Chest">Gümüş Sandık (Silver)</option>
-                            <option value="Bronz Sandık / Bronze Chest">Bronz Sandık (Bronze)</option>
-                        </optgroup>
-                        <optgroup label="Dünya Etkinlikleri / World Events">
-                            <option value="Power Core">Power Core</option>
-                            <option value="Energy Vortex">Energy Vortex</option>
-                            <option value="Castle / Kale">Castle</option>
-                            <option value="Outpost">Outpost</option>
-                        </optgroup>
-                        <optgroup label="Yaratıklar / Mobs">
-                            <option value="World Boss">World Boss</option>
-                            <option value="Resource Boss">Resource Boss</option>
-                            <option value="Spider / Örümcek">Crystal Spider</option>
-                        </optgroup>
-                    </select>
+                    <input type="text" id="isim" list="objektif-listesi" placeholder="Örn: 4.4, Hide, Green..." required autocomplete="off" class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white focus:border-amber-500 outline-none">
+                    
+                    <datalist id="objektif-listesi">
+                        <option value="4.4 Hide"></option>
+                        <option value="5.4 Hide"></option>
+                        <option value="6.4 Hide"></option>
+                        <option value="7.4 Hide"></option>
+                        <option value="8.4 Hide"></option>
+                        <option value="4.4 Wood"></option>
+                        <option value="5.4 Wood"></option>
+                        <option value="6.4 Wood"></option>
+                        <option value="7.4 Wood"></option>
+                        <option value="8.4 Wood"></option>
+                        <option value="4.4 Ore"></option>
+                        <option value="5.4 Ore"></option>
+                        <option value="6.4 Ore"></option>
+                        <option value="7.4 Ore"></option>
+                        <option value="8.4 Ore"></option>
+                        <option value="4.4 Fiber"></option>
+                        <option value="5.4 Fiber"></option>
+                        <option value="6.4 Fiber"></option>
+                        <option value="7.4 Fiber"></option>
+                        <option value="8.4 Fiber"></option>
+                        <option value="4.4 Rock"></option>
+                        <option value="5.4 Rock"></option>
+                        <option value="6.4 Rock"></option>
+                        <option value="7.4 Rock"></option>
+                        <option value="8.4 Rock"></option>
+
+                        <option value="Green Outpost"></option>
+                        <option value="Blue Outpost"></option>
+                        <option value="Purple Outpost"></option>
+                        <option value="Legendary Outpost"></option>
+                        <option value="Green Castle"></option>
+                        <option value="Blue Castle"></option>
+                        <option value="Purple Castle"></option>
+                        <option value="Legendary Castle"></option>
+                        <option value="Green Core"></option>
+                        <option value="Blue Core"></option>
+                        <option value="Purple Core"></option>
+                        <option value="Legendary Core"></option>
+                        <option value="Green Vortex"></option>
+                        <option value="Blue Vortex"></option>
+                        <option value="Purple Vortex"></option>
+                        <option value="Legendary Vortex"></option>
+                    </datalist>
                 </div>
 
                 <div>
                     <label class="block mb-1">
                         <span class="text-xs text-slate-300">Harita Konumu</span>
-                        <span class="block text-[10px] text-slate-500">Black Zone Map</span>
+                        <span class="block text-[10px] text-slate-500">Sadece Black Zone Map</span>
                     </label>
-                    <select id="harita" required class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white focus:border-amber-500 outline-none cursor-pointer">
-                        <option value="" disabled selected>BZ Haritası Seç / Select BZ</option>
-                        <optgroup label="🏆 Tier 8 Zones">
-                            <option value="Sunfang Wasteland">Sunfang Wasteland</option>
-                            <option value="Deathreach Priory">Deathreach Priory</option>
-                            <option value="Glacierfall Fissure">Glacierfall Fissure</option>
-                            <option value="Twinchannel Narrows">Twinchannel Narrows</option>
-                            <option value="Munten Tundra">Munten Tundra</option>
-                            <option value="GraveofEternity">Grave of Eternity</option>
-                        </optgroup>
-                        <optgroup label="⚔️ Tier 7 Zones">
-                            <option value="Whitengorge">Whitengorge</option>
-                            <option value="Everwinter Expanse">Everwinter Expanse</option>
-                            <option value="Highstone Mound">Highstone Mound</option>
-                            <option value="Wailing Bulwark">Wailing Bulwark</option>
-                            <option value="Slakesands Mesa">Slakesands Mesa</option>
-                        </optgroup>
-                        <optgroup label="⛺ The Rests (Güvenli Bölgeler)">
-                            <option value="Arthur's Rest">Arthur's Rest</option>
-                            <option value="Merlyn's Rest">Merlyn's Rest</option>
-                            <option value="Morgana's Rest">Morgana's Rest</option>
-                        </optgroup>
-                        <optgroup label="🌌 Özel Black Zone / Diğer">
-                            <option value="Avalonian Road (BZ)">Avalonian Road (BZ)</option>
-                            <option value="Brecilien / Mists">Brecilien / Mists</option>
-                            <option value="Diğer BZ Haritası / Other BZ">Diğer BZ Haritası / Other BZ</option>
-                        </optgroup>
-                    </select>
+                    <input type="text" id="harita" list="harita-listesi" placeholder="Harita adı yaz..." required autocomplete="off" class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white focus:border-amber-500 outline-none">
+                    
+                    <datalist id="harita-listesi">
+                        <option value="Sunfang Wasteland"></option>
+                        <option value="Sunfang Ravine"></option>
+                        <option value="Sunfang Approach"></option>
+                        <option value="Deathreach Priory"></option>
+                        <option value="Glacierfall Fissure"></option>
+                        <option value="Twinchannel Narrows"></option>
+                        <option value="Munten Tundra"></option>
+                        <option value="Grave of Eternity"></option>
+                        <option value="Whitengorge"></option>
+                        <option value="Everwinter Expanse"></option>
+                        <option value="Highstone Mound"></option>
+                        <option value="Wailing Bulwark"></option>
+                        <option value="Slakesands Mesa"></option>
+                        <option value="Arthur's Rest"></option>
+                        <option value="Merlyn's Rest"></option>
+                        <option value="Morgana's Rest"></option>
+                        <option value="Dryvein Cross"></option>
+                        <option value="Sandmount Strand"></option>
+                        <option value="Redwater Cove"></option>
+                        </datalist>
                 </div>
 
                 <div>
@@ -157,12 +178,10 @@
     </div>
 
     <script>
-        // DİKKAT: Eğer yeni bir Supabase projesi açtıysan buradaki URL ve KEY değişmelidir!
         const SUPABASE_URL = 'https://wbrpssjxzfxiyhwibked.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndicnBzc2p4emZ4aXlod2lia2VkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzOTA1NTAsImV4cCI6MjA5MDk2NjU1MH0.-ZOimu7lyVwG5OLyJvooCiZqvuqz523QkWHZyGV8ztA';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // İŞTE DEĞİŞİKLİK BURADA: Artık test tablona kayıt yapacak
         const TABLO_ADI = 'albion_content_tracker_deneme';
         const BUCKET_ADI = 'hedef-resimleri';
 
