@@ -3,70 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ALBION RADAR | V6.1 A2D INTEGRATION</title>
+    <title>ALBION RADAR | V6.2 ROUTE MASTER</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { background-color: #0f172a; color: #cbd5e1; margin: 0; }
         .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid #334155; }
         .priority-row { border-left: 4px solid #f59e0b; transition: all 0.2s; }
-        .selected-row { background: rgba(59, 130, 246, 0.15) !important; border-left-color: #3b82f6 !important; }
+        .recommended-card { background: linear-gradient(135deg, #1e3a8a 0%, #1e1b4b 100%); border: 1px solid #3b82f6; }
         .dev-banner { background-color: #047857; color: white; text-align: center; font-size: 0.75rem; padding: 0.25rem; font-weight: bold; }
-        input[type="checkbox"] { cursor: pointer; accent-color: #f59e0b; width: 16px; height: 16px; }
-        .map-link { color: #60a5fa; transition: color 0.2s; }
+        input[type="checkbox"] { cursor: pointer; accent-color: #f59e0b; }
+        .map-link { color: #60a5fa; text-decoration: none; font-size: 0.75rem; }
         .map-link:hover { color: #f59e0b; text-decoration: underline; }
     </style>
 </head>
 <body class="font-sans">
 
-    <div class="dev-banner">🌐 V6.1: ALBION2D CANLI BAĞLANTI VE AKILLI HAFIZA AKTİF</div>
+    <div class="dev-banner">🛡️ V6.2: AKILLI ROTA VE NAVİGASYON MOTORU AKTİF</div>
 
     <div class="max-w-7xl mx-auto p-4 md:p-8">
-        <header class="mb-8 text-center">
-            <h1 class="text-3xl font-bold text-amber-500 mb-2">⚔️ Albion Objective Tracker</h1>
-            <p class="text-xs text-slate-500 uppercase tracking-widest font-bold font-mono">Live Navigation System</p>
+        <header class="mb-6 text-center">
+            <h1 class="text-3xl font-bold text-amber-500 mb-1 font-serif italic">⚔️ Albion Objective Tracker</h1>
+            <p class="text-[10px] text-slate-500 uppercase tracking-[0.2em] font-bold">Route Optimization & Logistics</p>
         </header>
+
+        <div id="route-planner" class="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4 hidden">
+            <div class="col-span-full mb-1">
+                <h3 class="text-xs font-bold text-blue-400 uppercase tracking-wider flex items-center gap-2">
+                    📍 Stratejik Rota Önerisi <span class="text-[9px] text-slate-500 italic">(Yol Süresi < Kalan Süre)</span>
+                </h3>
+            </div>
+            </div>
 
         <div class="glass-panel p-6 rounded-xl mb-6 border-t-4 border-t-amber-600 shadow-2xl">
             <form id="radar-form" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
                 <div>
-                    <label class="block mb-1 text-[10px] text-slate-400 uppercase font-bold">İçerik (Objective)</label>
-                    <input type="text" id="in_isim" list="full-obj-list" placeholder="8.4 Hide" required class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white text-sm outline-none focus:border-amber-500">
+                    <label class="block mb-1 text-[10px] text-slate-400 uppercase font-bold">İçerik</label>
+                    <input type="text" id="in_isim" list="full-obj-list" required class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white text-sm outline-none focus:border-amber-500">
                 </div>
                 <div>
-                    <div class="flex justify-between items-center mb-1">
-                        <label class="text-[10px] text-slate-400 uppercase font-bold">Harita (Map)</label>
-                        <button type="button" onclick="openA2D()" class="text-[9px] text-blue-400 hover:text-amber-500 font-bold underline">📍 SİTEDE GÖR</button>
-                    </div>
-                    <input type="text" id="in_harita" list="comprehensive-map-list" oninput="autoDetect()" placeholder="Harita adı..." required class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white text-sm outline-none focus:border-amber-500">
+                    <label class="block mb-1 text-[10px] text-slate-400 uppercase font-bold">Harita</label>
+                    <input type="text" id="in_harita" list="comprehensive-map-list" oninput="autoDetect()" required class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white text-sm outline-none focus:border-amber-500">
                 </div>
                 <div>
-                    <label class="block mb-1 text-[10px] text-amber-500 uppercase font-bold">Uzaklık (Nodes)</label>
-                    <input type="number" id="in_mesafe" placeholder="Node Sayısı" min="1" class="w-full bg-slate-900 border border-amber-600/50 rounded p-2 text-white text-sm font-bold outline-none">
+                    <label class="block mb-1 text-[10px] text-amber-500 uppercase font-bold">Mesafe (Nodes)</label>
+                    <input type="number" id="in_mesafe" placeholder="Map Sayısı" min="1" class="w-full bg-slate-900 border border-amber-600/50 rounded p-2 text-white text-sm font-bold outline-none">
                 </div>
                 <div>
                     <label class="block mb-1 text-[10px] text-slate-400 uppercase font-bold">Dakika Kaldı</label>
-                    <input type="number" id="in_dakika" placeholder="45" required class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white text-sm outline-none">
+                    <input type="number" id="in_dakika" required class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white text-sm outline-none">
                 </div>
                 <button type="submit" id="btn_submit" class="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 rounded h-[38px] text-sm uppercase transition-all shadow-lg">Ekle</button>
             </form>
         </div>
 
-        <div id="bulk-controls" class="mb-4 flex items-center justify-between bg-blue-900/30 border border-blue-500/50 p-3 rounded-lg hidden">
-            <div class="text-sm text-blue-300 font-bold">⚡ <span id="selected-count">0</span> seçildi</div>
-            <button onclick="bulkDelete()" class="bg-red-600 hover:bg-red-500 text-white text-xs font-bold px-4 py-2 rounded uppercase transition-all shadow-lg">Seçilenleri Sil</button>
-        </div>
-
         <div class="glass-panel p-4 rounded-xl shadow-lg">
             <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm border-separate border-spacing-y-1">
+                <table class="w-full text-left text-sm">
                     <thead>
-                        <tr class="text-slate-500 text-[10px] uppercase font-bold">
-                            <th class="p-3 w-10 text-center"><input type="checkbox" id="select-all" onclick="toggleAll(this)"></th>
-                            <th class="p-3">İçerik</th>
+                        <tr class="text-slate-500 text-[10px] uppercase font-bold border-b border-slate-700">
+                            <th class="p-3 w-10"></th>
+                            <th class="p-3">Objektif</th>
                             <th class="p-3">Harita</th>
-                            <th class="p-3 text-amber-500 text-center">Uzaklık</th>
-                            <th class="p-3">Kalan Süre</th>
+                            <th class="p-3 text-amber-500 text-center">Mesafe</th>
+                            <th class="p-3">Geri Sayım</th>
                             <th class="p-3 text-right">İşlem</th>
                         </tr>
                     </thead>
@@ -77,10 +77,10 @@
     </div>
 
     <datalist id="full-obj-list">
-        <option value="4.4 Hide"></option><option value="8.4 Hide"></option><option value="Purple Core"></option><option value="Legendary Vortex"></option>
+        <option value="8.4 Hide"></option><option value="7.4 Hide"></option><option value="Purple Core"></option><option value="Legendary Vortex"></option>
     </datalist>
     <datalist id="comprehensive-map-list">
-        <option value="Grave of Memory"></option><option value="Windgrass Border"></option><option value="Windgrass Gully"></option><option value="Sandmount Ascent"></option><option value="Bleachskull Steppe"></option>
+        <option value="Grave of Memory"></option><option value="Windgrass Border"></option><option value="Sandmount Ascent"></option><option value="Avalanche Incline"></option>
     </datalist>
 
     <script>
@@ -89,23 +89,16 @@
         const sb = supabase.createClient(S_URL, S_KEY);
         const TABLE = 'albion_content_tracker_deneme';
 
-        // OTOMATİK HAFIZA SİSTEMİ (LocalStorage)
-        const MAP_MEMORY = JSON.parse(localStorage.getItem('albion_map_memory')) || {
-            "Grave of Memory": 1, "Windgrass Border": 1, "Bleachskull Steppe": 2, "Sandmount Ascent": 6
+        // Harita Hafızası
+        const MAP_MEMORY = JSON.parse(localStorage.getItem('albion_map_memory_v2')) || {
+            "Grave of Memory": 1, "Windgrass Border": 1, "Sandmount Ascent": 6, "Avalanche Incline": 7
         };
 
         let items = [];
-        let selectedIds = new Set();
 
-        function openA2D() {
-            const mapName = document.getElementById('in_harita').value;
-            if (mapName) {
-                // Harita ismini URL dostu yap (Boşlukları %20 yap)
-                const formattedName = encodeURIComponent(mapName);
-                window.open(`https://albiononline2d.com/en/map/${formattedName}`, '_blank');
-            } else {
-                window.open(`https://albiononline2d.com/en/map`, '_blank');
-            }
+        function formatMapUrl(name) {
+            // "Sandmount Ascent" -> "sandmount_ascent"
+            return name.toLowerCase().replace(/\s+/g, '_');
         }
 
         function autoDetect() {
@@ -117,6 +110,7 @@
             const { data } = await sb.from(TABLE).select('*');
             items = data ? data.sort((a, b) => new Date(a.bitis_zamani) - new Date(b.bitis_zamani)) : [];
             render();
+            updatePlanner();
         }
 
         function render() {
@@ -124,48 +118,51 @@
             body.innerHTML = '';
             items.forEach(i => {
                 const node = MAP_MEMORY[i.harita] || "?";
-                const travel = node !== "?" ? node * 2.1 : 10;
                 const left = (new Date(i.bitis_zamani) - new Date()) / 60000;
-                const isSelected = selectedIds.has(i.id);
                 
                 const tr = document.createElement('tr');
-                tr.className = `priority-row bg-slate-800/40 ${isSelected ? 'selected-row' : ''}`;
+                tr.className = `priority-row bg-slate-800/30 border-b border-slate-700/50`;
                 tr.innerHTML = `
-                    <td class="p-3 text-center"><input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleSelect(${i.id}, this)"></td>
+                    <td class="p-3 text-center"><input type="checkbox"></td>
                     <td class="p-3 font-bold text-white uppercase text-xs">${i.isim}</td>
-                    <td class="p-3 text-xs">
-                        <a href="https://albiononline2d.com/en/map/${encodeURIComponent(i.harita)}" target="_blank" class="map-link">📍 ${i.harita}</a>
+                    <td class="p-3">
+                        <a href="https://albiononline2d.com/en/map/${formatMapUrl(i.harita)}" target="_blank" class="map-link">🔗 ${i.harita}</a>
                     </td>
                     <td class="p-3 text-amber-500 text-center text-[10px] font-bold italic">${node} Map</td>
                     <td class="p-3 font-mono text-amber-500 text-xs">${left > 0 ? Math.floor(left) + 'dk' : 'BİTTİ'}</td>
-                    <td class="p-3 text-right"><button onclick="del(${i.id})" class="text-red-500/50 hover:text-red-500 text-[10px] font-bold uppercase">Sil</button></td>
+                    <td class="p-3 text-right"><button onclick="del(${i.id})" class="text-red-500/50 hover:text-red-500 text-[10px]">Sil</button></td>
                 `;
                 body.appendChild(tr);
             });
-            updateBulkUI();
         }
 
-        function toggleSelect(id, el) {
-            el.checked ? selectedIds.add(id) : selectedIds.delete(id);
-            render();
-        }
+        function updatePlanner() {
+            const planner = document.getElementById('route-planner');
+            planner.innerHTML = '<div class="col-span-full mb-1"><h3 class="text-xs font-bold text-blue-400 uppercase tracking-wider flex items-center gap-2">📍 Stratejik Rota Önerisi</h3></div>';
+            
+            const viable = items.filter(i => {
+                const node = MAP_MEMORY[i.harita] || 3;
+                const travelTime = node * 2.2; // 2.2 dk per map (yükleme + binek hızı)
+                const timeLeft = (new Date(i.bitis_zamani) - new Date()) / 60000;
+                return timeLeft > travelTime;
+            });
 
-        function toggleAll(el) {
-            selectedIds.clear();
-            if (el.checked) items.forEach(i => selectedIds.add(i.id));
-            render();
-        }
-
-        function updateBulkUI() {
-            const ctrl = document.getElementById('bulk-controls');
-            ctrl.classList.toggle('hidden', selectedIds.size === 0);
-            document.getElementById('selected-count').innerText = selectedIds.size;
-        }
-
-        async function bulkDelete() {
-            if (!confirm(`${selectedIds.size} objektif siliniyor?`)) return;
-            await sb.from(TABLE).delete().in('id', Array.from(selectedIds));
-            selectedIds.clear(); load();
+            if (viable.length > 0) {
+                planner.classList.remove('hidden');
+                viable.slice(0, 3).forEach((v, idx) => {
+                    const div = document.createElement('div');
+                    div.className = "recommended-card p-4 rounded-xl shadow-lg border-l-4 border-blue-500";
+                    div.innerHTML = `
+                        <div class="text-[9px] text-blue-400 font-bold mb-1">DURAK #${idx+1}</div>
+                        <div class="text-white font-bold text-sm mb-1">${v.harita}</div>
+                        <div class="text-amber-500 text-xs font-bold uppercase">${v.isim}</div>
+                        <div class="mt-2 text-[10px] text-slate-400 italic">Varış: ~${(MAP_MEMORY[v.harita] || 3) * 2}dk sürer</div>
+                    `;
+                    planner.appendChild(div);
+                });
+            } else {
+                planner.classList.add('hidden');
+            }
         }
 
         document.getElementById('radar-form').addEventListener('submit', async (e) => {
@@ -176,10 +173,9 @@
             const map = document.getElementById('in_harita').value;
             const dist = parseInt(document.getElementById('in_mesafe').value);
             
-            // YENİ: Hafızaya Kaydet (LocalStorage)
             if(dist) {
                 MAP_MEMORY[map] = dist;
-                localStorage.setItem('albion_map_memory', JSON.stringify(MAP_MEMORY));
+                localStorage.setItem('albion_map_memory_v2', JSON.stringify(MAP_MEMORY));
             }
 
             const payload = {
@@ -189,11 +185,12 @@
             };
 
             await sb.from(TABLE).insert([payload]);
-            e.target.reset(); load();
+            e.target.reset(); 
+            load();
             btn.innerText = "Ekle"; btn.disabled = false;
         });
 
-        async function del(id) { await sb.from(TABLE).delete().eq('id', id); selectedIds.delete(id); load(); }
+        async function del(id) { await sb.from(TABLE).delete().eq('id', id); load(); }
         setInterval(load, 30000);
         load();
     </script>
