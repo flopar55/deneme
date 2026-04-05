@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TEST ORTAMI | Albion Radar V3.2</title>
+    <title>TEST ORTAMI | Albion Radar V3.3</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -15,14 +15,12 @@
         }
         input[type="file"]::file-selector-button:hover { background-color: #475569; }
         .dev-banner { background-color: #b91c1c; color: white; text-align: center; font-size: 0.75rem; padding: 0.25rem; font-weight: bold; letter-spacing: 1px;}
-        
-        /* Datalist (Otomatik Tamamlama) kutularının ikonlarını beyaz yapma */
         ::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
     </style>
 </head>
 <body class="font-sans">
 
-    <div class="dev-banner">⚠️ STAGING / TEST ORTAMI - AKILLI ARAMA (AUTOCOMPLETE) AKTİF ⚠️</div>
+    <div class="dev-banner">⚠️ STAGING / TEST ORTAMI - GELİŞMİŞ BZ HARİTA LİSTESİ AKTİF ⚠️</div>
 
     <input type="file" id="hidden-image-input" accept="image/*" class="hidden" onchange="handleImageUpdate(event)">
 
@@ -69,11 +67,6 @@
                         <option value="6.4 Fiber"></option>
                         <option value="7.4 Fiber"></option>
                         <option value="8.4 Fiber"></option>
-                        <option value="4.4 Rock"></option>
-                        <option value="5.4 Rock"></option>
-                        <option value="6.4 Rock"></option>
-                        <option value="7.4 Rock"></option>
-                        <option value="8.4 Rock"></option>
 
                         <option value="Green Outpost"></option>
                         <option value="Blue Outpost"></option>
@@ -102,26 +95,79 @@
                     <input type="text" id="harita" list="harita-listesi" placeholder="Harita adı yaz..." required autocomplete="off" class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white focus:border-amber-500 outline-none">
                     
                     <datalist id="harita-listesi">
-                        <option value="Sunfang Wasteland"></option>
-                        <option value="Sunfang Ravine"></option>
-                        <option value="Sunfang Approach"></option>
-                        <option value="Deathreach Priory"></option>
-                        <option value="Glacierfall Fissure"></option>
-                        <option value="Twinchannel Narrows"></option>
-                        <option value="Munten Tundra"></option>
-                        <option value="Grave of Eternity"></option>
-                        <option value="Whitengorge"></option>
-                        <option value="Everwinter Expanse"></option>
-                        <option value="Highstone Mound"></option>
-                        <option value="Wailing Bulwark"></option>
-                        <option value="Slakesands Mesa"></option>
                         <option value="Arthur's Rest"></option>
                         <option value="Merlyn's Rest"></option>
                         <option value="Morgana's Rest"></option>
+                        
+                        <option value="Sunfang Wasteland"></option>
+                        <option value="Sunfang Ravine"></option>
+                        <option value="Sunfang Approach"></option>
+                        <option value="Sunfang Dawn"></option>
+                        <option value="Slakesands Mesa"></option>
+                        <option value="Slakesands Canyon"></option>
                         <option value="Dryvein Cross"></option>
+                        <option value="Dryvein Oasis"></option>
+                        <option value="Dryvein Plain"></option>
+                        <option value="Dryvein Steppe"></option>
+                        <option value="Dryvein End"></option>
                         <option value="Sandmount Strand"></option>
-                        <option value="Redwater Cove"></option>
-                        </datalist>
+                        <option value="Sandmount Ascent"></option>
+                        <option value="Sandmount Desert"></option>
+                        <option value="Parchsand Cliffs"></option>
+                        <option value="Parchsand Drought"></option>
+
+                        <option value="Glacierfall Fissure"></option>
+                        <option value="Glacierfall Pass"></option>
+                        <option value="Glacierfall Valley"></option>
+                        <option value="Glacierfall Canyon"></option>
+                        <option value="Everwinter Expanse"></option>
+                        <option value="Everwinter Gorge"></option>
+                        <option value="Everwinter Peak"></option>
+                        <option value="Everwinter Reach"></option>
+                        <option value="Everwinter Crossing"></option>
+                        <option value="Munten Tundra"></option>
+                        <option value="Munten Rise"></option>
+                        <option value="Frostspring Volcano"></option>
+                        <option value="Frostspring Passage"></option>
+                        <option value="Whitecliff Peak"></option>
+                        <option value="Whitecliff Expanse"></option>
+
+                        <option value="Deathreach Priory"></option>
+                        <option value="Longfen Marsh"></option>
+                        <option value="Longfen Veins"></option>
+                        <option value="Longfen Arms"></option>
+                        <option value="Meltwater Bog"></option>
+                        <option value="Meltwater Delta"></option>
+                        <option value="Murdergulch Gap"></option>
+                        <option value="Murdergulch Trail"></option>
+                        <option value="Murdergulch Cross"></option>
+                        <option value="Murdergulch Divide"></option>
+                        <option value="Runnelvein Bog"></option>
+                        <option value="Runnelvein Slough"></option>
+
+                        <option value="Twinchannel Narrows"></option>
+                        <option value="Redtree Enclave"></option>
+                        <option value="Rivercopse Path"></option>
+                        <option value="Rivercopse Crossing"></option>
+                        <option value="Rivercopse Fount"></option>
+                        <option value="Rivercopse Curve"></option>
+                        <option value="Timbertrack Meadows"></option>
+                        <option value="Timbertrack Trough"></option>
+                        <option value="Eye of the Forest"></option>
+
+                        <option value="Grave of Eternity"></option>
+                        <option value="Wailing Bulwark"></option>
+                        <option value="Highstone Mound"></option>
+                        <option value="Highstone Loch"></option>
+                        <option value="Whitengorge"></option>
+                        <option value="Whitebank Cross"></option>
+                        <option value="Whitebank Stream"></option>
+                        <option value="Whitebank Ridge"></option>
+                        <option value="Nightbloom Track"></option>
+                        <option value="Razorrock Bank"></option>
+                        <option value="Razorrock Passage"></option>
+                        <option value="Razorrock Valley"></option>
+                    </datalist>
                 </div>
 
                 <div>
