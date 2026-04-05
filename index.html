@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ALBION RADAR | V5.0 FINAL</title>
+    <title>ALBION RADAR | V5.3 FULL MAPS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -17,34 +17,38 @@
 </head>
 <body class="font-sans">
 
-    <div class="dev-banner">🚀 V5.0: TAM LİSTE + AKILLI NAVİGASYON AKTİF</div>
+    <div class="dev-banner">🚀 V5.3: TÜM BLACK ZONE HARİTALARI + MANUEL NAVİGASYON AKTİF</div>
 
-    <div class="max-w-6xl mx-auto p-4 md:p-8">
+    <div class="max-w-7xl mx-auto p-4 md:p-8">
         <header class="mb-8 text-center">
             <h1 class="text-3xl font-bold text-amber-500 mb-2">⚔️ Albion Objective Tracker</h1>
-            <p class="text-xs text-slate-500 uppercase tracking-widest">Martlock Highlands Tactical Operations</p>
+            <p class="text-xs text-slate-500 uppercase tracking-widest font-bold">Full Black Zone Tactical Operations</p>
         </header>
 
         <div id="route-panel" class="mb-6 bg-blue-900/20 border border-blue-500/40 p-4 rounded-xl hidden">
-            <h3 class="text-blue-400 font-bold text-xs mb-3">📍 STRATEJİK OPERASYON ROTASI</h3>
+            <h3 class="text-blue-400 font-bold text-xs mb-3">📍 OPERASYONEL ROTA ÖNERİSİ</h3>
             <div id="route-items" class="flex flex-wrap items-center gap-2"></div>
         </div>
 
         <div class="glass-panel p-6 rounded-xl mb-8 border-t-4 border-t-amber-600 shadow-2xl">
-            <form id="radar-form" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            <form id="radar-form" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
                 <div>
-                    <label class="block mb-1 text-[10px] text-slate-400 uppercase">İçerik (Tür Seç)</label>
-                    <input type="text" id="in_isim" list="obj-list" placeholder="Örn: 8.4 Hide" required class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white outline-none focus:border-amber-500 text-sm">
+                    <label class="block mb-1 text-[10px] text-slate-400 uppercase">İçerik (Objective)</label>
+                    <input type="text" id="in_isim" list="obj-list" placeholder="8.4 Hide" required class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white outline-none text-sm">
                 </div>
                 <div>
-                    <label class="block mb-1 text-[10px] text-slate-400 uppercase">Harita (Konum Seç)</label>
-                    <input type="text" id="in_harita" list="map-list" placeholder="Harita adı..." required class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white outline-none focus:border-amber-500 text-sm">
+                    <label class="block mb-1 text-[10px] text-slate-400 uppercase">Harita (Map)</label>
+                    <input type="text" id="in_harita" list="full-map-list" oninput="autoDetect()" placeholder="Harita adı..." required class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white outline-none text-sm">
+                </div>
+                <div>
+                    <label class="block mb-1 text-[10px] text-amber-500 uppercase font-bold">Uzaklık (Nodes)</label>
+                    <input type="number" id="in_mesafe" placeholder="Map Sayısı" min="1" max="25" class="w-full bg-slate-900 border border-amber-600/50 rounded p-2 text-white outline-none text-sm font-bold">
                 </div>
                 <div>
                     <label class="block mb-1 text-[10px] text-slate-400 uppercase">Dakika Kaldı</label>
-                    <input type="number" id="in_dakika" placeholder="45" required class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white outline-none focus:border-amber-500 text-sm">
+                    <input type="number" id="in_dakika" placeholder="45" required class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white outline-none text-sm">
                 </div>
-                <button type="submit" id="btn_submit" class="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 rounded h-[38px] transition-all text-sm">SİSTEME İŞLE</button>
+                <button type="submit" id="btn_submit" class="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 rounded h-[38px] transition-all text-sm uppercase">Sisteme İşle</button>
             </form>
         </div>
 
@@ -52,16 +56,16 @@
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-sm">
                     <thead>
-                        <tr class="border-b border-slate-700 text-slate-500 text-[10px] uppercase">
+                        <tr class="border-b border-slate-700 text-slate-500 text-[10px] uppercase font-bold">
                             <th class="p-3">İçerik</th>
                             <th class="p-3">Harita</th>
-                            <th class="p-3">Uzaklık (Martlock)</th>
+                            <th class="p-3 text-amber-500">Mesafe</th>
                             <th class="p-3">Kalan Süre</th>
                             <th class="p-3 text-right">İşlem</th>
                         </tr>
                     </thead>
                     <tbody id="list-body">
-                        <tr><td colspan="5" class="text-center p-12 text-slate-600 italic">Veriler yükleniyor...</td></tr>
+                        <tr><td colspan="5" class="text-center p-12 text-slate-600 italic">Yükleniyor...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -77,16 +81,23 @@
         <option value="Green Vortex"></option><option value="Blue Vortex"></option><option value="Purple Vortex"></option><option value="Legendary Vortex"></option>
         <option value="Green Outpost"></option><option value="Blue Outpost"></option><option value="Purple Outpost"></option><option value="Legendary Outpost"></option>
         <option value="Green Castle"></option><option value="Blue Castle"></option><option value="Purple Castle"></option><option value="Legendary Castle"></option>
-        <option value="World Boss"></option><option value="Spider / Örümcek"></option>
     </datalist>
 
-    <datalist id="map-list">
-        <option value="Grave of Eternity"></option><option value="Mudfoot Sump"></option><option value="Windgrass Border"></option>
-        <option value="Cathedral of Light"></option><option value="Windgrass Fields"></option><option value="Bleachskull Steppe"></option><option value="Frostbite Mountain"></option>
-        <option value="Gravemound Brim"></option><option value="Highstone Grassland"></option><option value="Bleachskull Desert"></option><option value="Westweald Thicket"></option>
-        <option value="Gravemound Cliffs"></option><option value="Gravemound Hills"></option><option value="Greenhollow Vale"></option><option value="Highstone Plateau"></option><option value="Westweald Shore"></option>
-        <option value="Highstone Loch"></option><option value="Highstone Meadow"></option><option value="Sandmount Strand"></option>
-        <option value="Sandmount Ascent"></option><option value="Razorrock Verge"></option><option value="Avalanche Incline"></option>
+    <datalist id="full-map-list">
+        <option value="Arthur's Rest"></option><option value="Merlyn's Rest"></option><option value="Morgana's Rest"></option>
+        <option value="Grave of Memory"></option><option value="Highstone Loch"></option><option value="Highstone Mound"></option>
+        <option value="Highstone Meadow"></option><option value="Highstone Plateau"></option><option value="Razorrock Bank"></option>
+        <option value="Razorrock Passage"></option><option value="Razorrock Chasm"></option><option value="Razorrock Ravine"></option>
+        <option value="Mudfoot Sump"></option><option value="Cathedral of Light"></option><option value="Gravemound Cliffs"></option>
+        <option value="Gravemound Hills"></option><option value="Gravemound Brim"></option>
+        <option value="Sandmount Ascent"></option><option value="Sandmount Strand"></option><option value="Sandmount Desert"></option>
+        <option value="Windgrass Border"></option><option value="Windgrass Fields"></option><option value="Windgrass Coast"></option>
+        <option value="Sunfang Wasteland"></option><option value="Dryvein Cross"></option><option value="Dryvein Oasis"></option>
+        <option value="Redtree Enclave"></option><option value="Rivercopse Path"></option><option value="Timbertrack Meadows"></option>
+        <option value="Twinchannel Narrows"></option><option value="Eye of the Forest"></option>
+        <option value="Glacierfall Fissure"></option><option value="Everwinter Expanse"></option><option value="Frostbite Mountain"></option>
+        <option value="Munten Tundra"></option><option value="Avalanche Incline"></option>
+        <option value="Murdergulch Gap"></option><option value="Longfen Marsh"></option><option value="Drownfield Sink"></option>
     </datalist>
 
     <script>
@@ -95,17 +106,23 @@
         const sb = supabase.createClient(S_URL, S_KEY);
         const TABLE = 'albion_content_tracker_deneme';
 
-        // MARTLOCK MESAFE VERİLERİ (Harita Sayısı)
-        const DISTANCES = {
-            "Grave of Eternity": 1, "Mudfoot Sump": 1, "Windgrass Border": 1,
-            "Cathedral of Light": 2, "Windgrass Fields": 2, "Bleachskull Steppe": 2, "Frostbite Mountain": 2,
-            "Gravemound Brim": 3, "Highstone Grassland": 3, "Bleachskull Desert": 3, "Westweald Thicket": 3,
-            "Gravemound Cliffs": 4, "Gravemound Hills": 4, "Greenhollow Vale": 4, "Highstone Plateau": 4, "Westweald Shore": 4,
-            "Highstone Loch": 5, "Highstone Meadow": 5, "Sandmount Strand": 5,
-            "Sandmount Ascent": 6, "Razorrock Verge": 6, "Avalanche Incline": 7
+        // Hafızadaki Mesafeler
+        const PRESETS = {
+            "Grave of Memory": 1, "Mudfoot Sump": 1, "Windgrass Border": 1,
+            "Cathedral of Light": 2, "Windgrass Fields": 2, "Bleachskull Steppe": 2,
+            "Gravemound Brim": 3, "Highstone Grassland": 3, "Westweald Thicket": 3,
+            "Gravemound Cliffs": 4, "Gravemound Hills": 4, "Highstone Plateau": 4,
+            "Highstone Loch": 5, "Sandmount Strand": 5,
+            "Sandmount Ascent": 6, "Avalanche Incline": 7
         };
 
         let items = [];
+
+        function autoDetect() {
+            const map = document.getElementById('in_harita').value;
+            const dist = document.getElementById('in_mesafe');
+            if (PRESETS[map]) dist.value = PRESETS[map];
+        }
 
         async function load() {
             try {
@@ -113,15 +130,14 @@
                 if (error) throw error;
                 items = data.sort((a, b) => new Date(a.bitis_zamani) - new Date(b.bitis_zamani));
                 render();
-            } catch (e) { console.error("Yükleme Hatası:", e.message); }
+            } catch (e) { console.error(e); }
         }
 
         function render() {
             const body = document.getElementById('list-body');
             body.innerHTML = '';
-            
             items.forEach(i => {
-                const node = DISTANCES[i.harita] || 3;
+                const node = PRESETS[i.harita] || 3;
                 const travel = node * 2.1;
                 const left = (new Date(i.bitis_zamani) - new Date()) / 60000;
                 const fail = left < travel;
@@ -131,11 +147,9 @@
                 tr.innerHTML = `
                     <td class="p-3 font-bold text-white">${i.isim}</td>
                     <td class="p-3 text-slate-400">${i.harita}</td>
-                    <td class="p-3 text-blue-400 text-[10px] font-bold">📍 ${node} Map (~${travel.toFixed(0)}dk)</td>
-                    <td class="p-3 font-mono text-amber-500">${left > 0 ? Math.floor(left) + 'dk kaldı' : 'BİTTİ'}</td>
-                    <td class="p-3 text-right">
-                        <button onclick="del(${i.id})" class="text-red-500 text-[10px] hover:underline">SİL</button>
-                    </td>
+                    <td class="p-3 text-amber-500 text-[10px] font-bold">📍 ${node} Map</td>
+                    <td class="p-3 font-mono text-amber-500">${left > 0 ? Math.floor(left) + 'dk' : 'BİTTİ'}</td>
+                    <td class="p-3 text-right"><button onclick="del(${i.id})" class="text-red-500 text-[10px] font-bold uppercase">Sil</button></td>
                 `;
                 body.appendChild(tr);
             });
@@ -145,15 +159,14 @@
         function updateRoute() {
             const panel = document.getElementById('route-panel');
             const list = document.getElementById('route-items');
-            const viable = items.filter(i => (new Date(i.bitis_zamani) - new Date()) / 60000 >= (DISTANCES[i.harita] || 3) * 2.1);
-            
+            const viable = items.filter(i => (new Date(i.bitis_zamani) - new Date()) / 60000 >= (PRESETS[i.harita] || 3) * 2.1);
             if(viable.length > 0) {
                 panel.classList.remove('hidden');
                 list.innerHTML = viable.slice(0, 3).map((v, idx) => `
-                    <div class="bg-slate-800 border border-blue-500/30 p-2 rounded text-[10px]">
+                    <div class="bg-slate-800 border border-amber-500/30 p-2 rounded text-[10px] shadow-lg">
                         <b class="text-white">${idx+1}. ${v.harita}</b> <span class="text-slate-500">(${v.isim})</span>
                     </div>
-                `).join('<span class="text-blue-900 mx-1">➜</span>');
+                `).join('<span class="text-amber-900 mx-2 font-bold">➜</span>');
             } else { panel.classList.add('hidden'); }
         }
 
@@ -162,9 +175,13 @@
             const btn = document.getElementById('btn_submit');
             btn.innerText = "..."; btn.disabled = true;
 
+            const map = document.getElementById('in_harita').value;
+            const mDist = parseInt(document.getElementById('in_mesafe').value);
+            if (mDist) PRESETS[map] = mDist;
+
             const payload = {
                 isim: document.getElementById('in_isim').value,
-                harita: document.getElementById('in_harita').value,
+                harita: map,
                 bitis_zamani: new Date(Date.now() + document.getElementById('in_dakika').value * 60000).toISOString()
             };
 
@@ -173,17 +190,11 @@
                 if (error) throw error;
                 e.target.reset();
                 load();
-            } catch (e) { alert("HATA: " + e.message); }
-            finally { btn.innerText = "SİSTEME İŞLE"; btn.disabled = false; }
+            } catch (e) { alert("Hata: " + e.message); }
+            finally { btn.innerText = "Sisteme İşle"; btn.disabled = false; }
         });
 
-        async function del(id) {
-            if(confirm("Silinsin mi?")) {
-                await sb.from(TABLE).delete().eq('id', id);
-                load();
-            }
-        }
-
+        async function del(id) { if(confirm("Silinsin mi?")) { await sb.from(TABLE).delete().eq('id', id); load(); } }
         setInterval(load, 30000);
         load();
     </script>
