@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ALBION RADAR | V6.7 KOLSAN KAYIŞ EDİŞIN</title>
+    <title>ALBION RADAR | V6.8 ANIME EDITION</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -17,11 +17,11 @@
         ::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
     </style>
 </head>
-<body class="font-sans">
+<body class="font-sans relative min-h-screen">
 
-    <div class="dev-banner">🚀 V6.7: KOLSAN KAYIŞ EDİŞIN</div>
+    <div class="dev-banner">🚀 V6.8: TAM KONTROL VE GÖRSEL EKLENTİLER AKTİF</div>
 
-    <div class="max-w-7xl mx-auto p-4 md:p-8">
+    <div class="max-w-7xl mx-auto p-4 md:p-8 z-10 relative">
         <header class="mb-6 text-center">
             <h1 class="text-3xl font-bold text-amber-500 mb-1 font-serif">⚔️ Albion Objective Tracker</h1>
             <p class="text-[10px] text-slate-500 uppercase tracking-[0.3em] font-bold">Taktik & Lojistik Merkezi <span class="opacity-50">/ Tactical & Logistics Center</span></p>
@@ -33,15 +33,15 @@
             </div>
         </div>
 
-        <div class="glass-panel p-6 rounded-xl mb-6 border-t-4 border-t-amber-600 shadow-2xl">
+        <div class="glass-panel p-6 rounded-xl mb-6 border-t-4 border-t-amber-600 shadow-2xl relative z-20">
             <form id="radar-form" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
                 <div>
                     <label class="block mb-1 text-[10px] text-slate-400 uppercase font-bold">İçerik <span class="text-[8px] text-slate-500">/ Objective</span></label>
-                    <input type="text" id="in_isim" list="full-obj-list" placeholder="Seç / Select..." required class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white text-sm outline-none focus:border-amber-500">
+                    <input type="text" id="in_isim" list="full-obj-list" placeholder="Seç / Select..." required autocomplete="off" class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white text-sm outline-none focus:border-amber-500">
                 </div>
                 <div>
                     <label class="block mb-1 text-[10px] text-slate-400 uppercase font-bold">Harita <span class="text-[8px] text-slate-500">/ Map</span></label>
-                    <input type="text" id="in_harita" list="map-list" oninput="autoDetect()" placeholder="Seç / Select..." required class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white text-sm outline-none focus:border-amber-500">
+                    <input type="text" id="in_harita" list="map-list" oninput="autoDetect()" placeholder="Seç / Select..." required autocomplete="off" class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white text-sm outline-none focus:border-amber-500">
                 </div>
                 <div>
                     <label class="block mb-1 text-[10px] text-amber-500 uppercase font-bold">Mesafe <span class="text-[8px] text-amber-700">/ Nodes</span></label>
@@ -57,7 +57,7 @@
             </form>
         </div>
 
-        <div id="bulk-controls" class="mb-4 flex items-center justify-between bg-blue-900/30 border border-blue-500/50 p-3 rounded-lg hidden transition-all">
+        <div id="bulk-controls" class="mb-4 flex items-center justify-between bg-blue-900/30 border border-blue-500/50 p-3 rounded-lg hidden transition-all relative z-20">
             <div class="text-sm text-blue-300 font-bold">
                 ⚡ <span id="selected-count">0</span> hedef seçildi <span class="text-xs text-blue-500 opacity-70">/ targets selected</span>
             </div>
@@ -66,7 +66,7 @@
             </button>
         </div>
 
-        <div class="glass-panel p-4 rounded-xl shadow-lg">
+        <div class="glass-panel p-4 rounded-xl shadow-lg relative z-20">
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-sm border-separate border-spacing-y-1">
                     <thead>
@@ -86,6 +86,14 @@
             </div>
         </div>
     </div>
+
+    <img id="anime-sol" src="https://i.imgur.com/8QzXnQ2.png" 
+         class="fixed bottom-0 left-0 h-64 md:h-80 w-auto cursor-pointer opacity-80 hover:opacity-100 transition-opacity z-0" 
+         onclick="animeDegistir('anime-sol')" title="Değiştirmek için tıkla!">
+         
+    <img id="anime-sag" src="https://i.imgur.com/pZq2gD0.png" 
+         class="fixed bottom-0 right-0 h-64 md:h-80 w-auto cursor-pointer opacity-80 hover:opacity-100 transition-opacity z-0" 
+         onclick="animeDegistir('anime-sag')" title="Değiştirmek için tıkla!">
 
     <datalist id="full-obj-list">
         <option value="Green Outpost"></option><option value="Blue Outpost"></option><option value="Purple Outpost"></option><option value="Legendary Outpost"></option>
@@ -107,11 +115,13 @@
     </datalist>
 
     <script>
+        // --- SUPABASE VERİTABANI ---
         const S_URL = 'https://wbrpssjxzfxiyhwibked.supabase.co';
         const S_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndicnBzc2p4emZ4aXlod2lia2VkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzOTA1NTAsImV4cCI6MjA5MDk2NjU1MH0.-ZOimu7lyVwG5OLyJvooCiZqvuqz523QkWHZyGV8ztA';
         const sb = supabase.createClient(S_URL, S_KEY);
         const TABLE = 'albion_content_tracker_deneme';
 
+        // --- HARİTA UZAKLIKLARI ---
         const MAP_GRAPH = {
             "Mudfoot Sump": 1, "Windgrass Border": 1, "Windgrass Precipice": 1, "Windgrass Gully": 1, "Windgrass Rill": 1,
             "Windgrass Fields": 2, "Cathedral of Light": 2, "Bleachskull Steppe": 2, "Windgrass Coast": 2, "Frostbite Mountain": 2,
@@ -123,6 +133,19 @@
         let items = [];
         let selectedIds = new Set();
 
+        // --- ANİME GÖRSEL HAVUZU VE DEĞİŞTİRME MANTIĞI ---
+        const animeHavuzu = [
+            "https://pin.it/TdnOHdwP0",
+            
+        ];
+
+        function animeDegistir(elementId) {
+            const imgElement = document.getElementById(elementId);
+            const rastgeleIndex = Math.floor(Math.random() * animeHavuzu.length);
+            imgElement.src = animeHavuzu[rastgeleIndex];
+        }
+
+        // --- SİSTEM FONKSİYONLARI ---
         function autoDetect() {
             const map = document.getElementById('in_harita').value;
             if (MAP_GRAPH[map]) document.getElementById('in_mesafe').value = MAP_GRAPH[map];
@@ -178,7 +201,9 @@
         async function bulkDelete() {
             if (!confirm(`${selectedIds.size} hedef silinsin mi? / Delete selected targets?`)) return;
             await sb.from(TABLE).delete().in('id', Array.from(selectedIds));
-            selectedIds.clear(); load();
+            selectedIds.clear(); 
+            document.getElementById('select-all').checked = false;
+            load();
         }
 
         function updateNavigation() {
@@ -195,7 +220,7 @@
                 display.classList.remove('hidden');
                 recommendations.forEach((rec, idx) => {
                     const card = document.createElement('div');
-                    card.className = "route-card p-4 rounded-xl shadow-2xl";
+                    card.className = "route-card p-4 rounded-xl shadow-2xl relative z-20";
                     card.innerHTML = `
                         <div class="text-[9px] text-blue-500 font-bold mb-1 uppercase">HEDEF / TARGET #${idx+1}</div>
                         <div class="text-white font-bold text-sm mb-1 leading-tight">${rec.harita}</div>
