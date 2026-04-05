@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ALBION RADAR | V5.4 OMNI-MAPS</title>
+    <title>ALBION RADAR | V5.5 DEFINITIVE EDITION</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -13,21 +13,20 @@
         .impossible-row { opacity: 0.35; grayscale: 1; pointer-events: none; }
         .dev-banner { background-color: #0369a1; color: white; text-align: center; font-size: 0.75rem; padding: 0.25rem; font-weight: bold; }
         ::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
-        input:focus { border-color: #f59e0b !important; }
     </style>
 </head>
 <body class="font-sans">
 
-    <div class="dev-banner">🚀 V5.4: TÜM BLACK ZONE (T5-T8) HARİTALARI YÜKLENDİ</div>
+    <div class="dev-banner">🚀 V5.5: TÜM GULLY, RILL VE BZ VARYASYONLARI EKLENDİ</div>
 
     <div class="max-w-7xl mx-auto p-4 md:p-8">
         <header class="mb-8 text-center">
             <h1 class="text-3xl font-bold text-amber-500 mb-2">⚔️ Albion Objective Tracker</h1>
-            <p class="text-xs text-slate-500 uppercase tracking-widest font-bold">Global Black Zone Tactical Command</p>
+            <p class="text-xs text-slate-500 uppercase tracking-widest font-bold">Comprehensive Tactical Command</p>
         </header>
 
-        <div id="route-panel" class="mb-6 bg-blue-900/20 border border-blue-500/40 p-4 rounded-xl hidden">
-            <h3 class="text-blue-400 font-bold text-xs mb-3">📍 OPERASYONEL ROTA ÖNERİSİ</h3>
+        <div id="route-panel" class="mb-6 bg-blue-900/20 border border-blue-500/40 p-4 rounded-xl hidden text-sm font-medium">
+            <h3 class="text-blue-400 font-bold text-xs mb-3 uppercase">📍 ROTA ÖNERİSİ</h3>
             <div id="route-items" class="flex flex-wrap items-center gap-2"></div>
         </div>
 
@@ -39,14 +38,14 @@
                 </div>
                 <div>
                     <label class="block mb-1 text-[10px] text-slate-400 uppercase font-bold">Harita</label>
-                    <input type="text" id="in_harita" list="full-blackzone-maps" oninput="autoDetectDistance()" placeholder="Harita adı seç..." required class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white outline-none text-sm">
+                    <input type="text" id="in_harita" list="comprehensive-maps" oninput="autoDetect()" placeholder="Harita adı..." required class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white outline-none text-sm">
                 </div>
                 <div>
                     <label class="block mb-1 text-[10px] text-amber-500 uppercase font-bold">Mesafe (Nodes)</label>
-                    <input type="number" id="in_mesafe" placeholder="Map Sayısı" min="1" max="25" class="w-full bg-slate-900 border border-amber-600/50 rounded p-2 text-white outline-none text-sm font-bold">
+                    <input type="number" id="in_mesafe" placeholder="Map" min="1" max="25" class="w-full bg-slate-900 border border-amber-600/50 rounded p-2 text-white outline-none text-sm font-bold">
                 </div>
                 <div>
-                    <label class="block mb-1 text-[10px] text-slate-400 uppercase font-bold">Dakika Kaldı</label>
+                    <label class="block mb-1 text-[10px] text-slate-400 uppercase font-bold">Dakika</label>
                     <input type="number" id="in_dakika" placeholder="45" required class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white outline-none text-sm">
                 </div>
                 <button type="submit" id="btn_submit" class="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 rounded h-[38px] transition-all text-sm uppercase shadow-lg">İşle</button>
@@ -58,15 +57,11 @@
                 <table class="w-full text-left text-sm">
                     <thead>
                         <tr class="border-b border-slate-700 text-slate-500 text-[10px] uppercase font-bold">
-                            <th class="p-3">İçerik</th>
-                            <th class="p-3">Harita</th>
-                            <th class="p-3 text-amber-500">Uzaklık</th>
-                            <th class="p-3">Kalan Süre</th>
-                            <th class="p-3 text-right">İşlem</th>
+                            <th class="p-3">İçerik</th><th class="p-3">Harita</th><th class="p-3 text-amber-500">Mesafe</th><th class="p-3">Kalan</th><th class="p-3 text-right">İşlem</th>
                         </tr>
                     </thead>
                     <tbody id="list-body">
-                        <tr><td colspan="5" class="text-center p-12 text-slate-600 italic">Veriler senkronize ediliyor...</td></tr>
+                        <tr><td colspan="5" class="text-center p-12 text-slate-600 italic">Yükleniyor...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -83,13 +78,14 @@
         <option value="Small Outpost"></option><option value="Medium Outpost"></option><option value="Large Outpost"></option>
     </datalist>
 
-    <datalist id="full-blackzone-maps">
-        <option value="Grave of Memory"></option><option value="Highstone Loch"></option><option value="Highstone Plateau"></option><option value="Highstone Meadow"></option><option value="Highstone Grassland"></option><option value="Highstone Mound"></option><option value="Razorrock Bank"></option><option value="Razorrock Passage"></option><option value="Razorrock Chasm"></option><option value="Razorrock Ravine"></option><option value="Razorrock Gulch"></option><option value="Razorrock Verge"></option><option value="Mudfoot Sump"></option><option value="Cathedral of Light"></option><option value="Gravemound Cliffs"></option><option value="Gravemound Hills"></option><option value="Gravemound Brim"></option><option value="Gravemound Slope"></option><option value="Westweald Thicket"></option><option value="Westweald Shore"></option><option value="Westweald Woods"></option>
-        <option value="Sandmount Ascent"></option><option value="Sandmount Strand"></option><option value="Sandmount Desert"></option><option value="Sandmount Plain"></option><option value="Windgrass Border"></option><option value="Windgrass Fields"></option><option value="Windgrass Coast"></option><option value="Windgrass Lush"></option><option value="Sunfang Wasteland"></option><option value="Sunfang Ravine"></option><option value="Sunfang Cliffs"></option><option value="Dryvein Cross"></option><option value="Dryvein Oasis"></option><option value="Dryvein Plain"></option><option value="Dryvein End"></option><option value="Bleachskull Steppe"></option><option value="Bleachskull Desert"></option>
-        <option value="Redtree Enclave"></option><option value="Rivercopse Path"></option><option value="Rivercopse Crossing"></option><option value="Rivercopse Curve"></option><option value="Timbertrack Meadows"></option><option value="Timbertrack Hollow"></option><option value="Twinchannel Narrows"></option><option value="Eye of the Forest"></option><option value="Longleaf Wilderness"></option><option value="Greenhollow Vale"></option>
-        <option value="Glacierfall Fissure"></option><option value="Glacierfall Pass"></option><option value="Everwinter Expanse"></option><option value="Everwinter Gorge"></option><option value="Everwinter Incline"></option><option value="Frostbite Mountain"></option><option value="Frostbite Way"></option><option value="Munten Tundra"></option><option value="Munten Rise"></option><option value="Avalanche Incline"></option><option value="Avalanche Ravine"></option><option value="Whitebank Wall"></option><option value="Whitebank Ridge"></option>
-        <option value="Murdergulch Gap"></option><option value="Murdergulch Trail"></option><option value="Longfen Marsh"></option><option value="Longfen Arms"></option><option value="Drownfield Sink"></option><option value="Drownfield Slough"></option><option value="Drownfield Wetlands"></option><option value="Greyney Slough"></option><option value="The Sump"></option>
-        <option value="Arthur's Rest"></option><option value="Merlyn's Rest"></option><option value="Morgana's Rest"></option>
+    <datalist id="comprehensive-maps">
+        <option value="Windgrass Border"></option><option value="Windgrass Fields"></option><option value="Windgrass Gully"></option><option value="Windgrass Rill"></option><option value="Windgrass Coast"></option><option value="Windgrass Lush"></option><option value="Windgrass Pit"></option>
+        <option value="Swiftwater Rill"></option><option value="Swiftwater Basin"></option><option value="Swiftwater Bend"></option><option value="Swiftwater Fens"></option>
+        <option value="Sandmount Ascent"></option><option value="Sandmount Strand"></option><option value="Sandmount Desert"></option><option value="Sandmount Plain"></option><option value="Sandmount Escarpment"></option>
+        <option value="Gravemound Cliffs"></option><option value="Gravemound Hills"></option><option value="Gravemound Brim"></option><option value="Gravemound Slope"></option><option value="Gravemound Gully"></option>
+        <option value="Highstone Loch"></option><option value="Highstone Plateau"></option><option value="Highstone Meadow"></option><option value="Highstone Grassland"></option><option value="Highstone Mound"></option><option value="Highstone Foothills"></option>
+        <option value="Razorrock Bank"></option><option value="Razorrock Passage"></option><option value="Razorrock Chasm"></option><option value="Razorrock Ravine"></option><option value="Razorrock Gulch"></option><option value="Razorrock Verge"></option>
+        <option value="Grave of Memory"></option><option value="Mudfoot Sump"></option><option value="Cathedral of Light"></option><option value="Sunfang Wasteland"></option><option value="Sunfang Ravine"></option><option value="Dryvein Cross"></option><option value="Dryvein Oasis"></option><option value="Avalanche Incline"></option><option value="Frostbite Mountain"></option><option value="Redtree Enclave"></option><option value="Eye of the Forest"></option><option value="Arthur's Rest"></option><option value="Merlyn's Rest"></option><option value="Morgana's Rest"></option>
     </datalist>
 
     <script>
@@ -98,22 +94,20 @@
         const sb = supabase.createClient(S_URL, S_KEY);
         const TABLE = 'albion_content_tracker_deneme';
 
-        // Hafızadaki Martlock Mesafe Rehberi
-        const DIST_DB = {
+        const PRESETS = {
             "Grave of Memory": 1, "Mudfoot Sump": 1, "Windgrass Border": 1,
-            "Cathedral of Light": 2, "Windgrass Fields": 2, "Bleachskull Steppe": 2, "Frostbite Mountain": 2,
-            "Gravemound Brim": 3, "Highstone Grassland": 3, "Westweald Thicket": 3,
-            "Gravemound Cliffs": 4, "Gravemound Hills": 4, "Highstone Plateau": 4, "Greenhollow Vale": 4,
-            "Highstone Loch": 5, "Sandmount Strand": 5, "Highstone Meadow": 5,
-            "Sandmount Ascent": 6, "Razorrock Verge": 6, "Avalanche Incline": 7
+            "Windgrass Fields": 2, "Cathedral of Light": 2, "Windgrass Gully": 2, "Windgrass Rill": 2,
+            "Gravemound Brim": 3, "Highstone Grassland": 3, "Windgrass Coast": 3,
+            "Gravemound Cliffs": 4, "Gravemound Hills": 4, "Highstone Plateau": 4,
+            "Highstone Loch": 5, "Sandmount Strand": 5, "Sandmount Ascent": 6, "Avalanche Incline": 7
         };
 
         let items = [];
 
-        function autoDetectDistance() {
+        function autoDetect() {
             const map = document.getElementById('in_harita').value;
-            const distInput = document.getElementById('in_mesafe');
-            if (DIST_DB[map]) distInput.value = DIST_DB[map];
+            const dist = document.getElementById('in_mesafe');
+            if (PRESETS[map]) dist.value = PRESETS[map];
         }
 
         async function load() {
@@ -129,7 +123,7 @@
             const body = document.getElementById('list-body');
             body.innerHTML = '';
             items.forEach(i => {
-                const node = DIST_DB[i.harita] || 3;
+                const node = PRESETS[i.harita] || 3;
                 const travel = node * 2.1;
                 const left = (new Date(i.bitis_zamani) - new Date()) / 60000;
                 const fail = left < travel;
@@ -141,7 +135,7 @@
                     <td class="p-3 text-slate-400">${i.harita}</td>
                     <td class="p-3 text-amber-500 text-[10px] font-bold">📍 ${node} Durak</td>
                     <td class="p-3 font-mono text-amber-500">${left > 0 ? Math.floor(left) + 'dk kaldı' : 'BİTTİ'}</td>
-                    <td class="p-3 text-right"><button onclick="del(${i.id})" class="text-red-500 text-[10px] font-bold uppercase hover:underline">Sil</button></td>
+                    <td class="p-3 text-right"><button onclick="del(${i.id})" class="text-red-500 text-[10px] font-bold hover:underline">SİL</button></td>
                 `;
                 body.appendChild(tr);
             });
@@ -151,11 +145,11 @@
         function updateRoute() {
             const panel = document.getElementById('route-panel');
             const list = document.getElementById('route-items');
-            const viable = items.filter(i => (new Date(i.bitis_zamani) - new Date()) / 60000 >= (DIST_DB[i.harita] || 3) * 2.1);
+            const viable = items.filter(i => (new Date(i.bitis_zamani) - new Date()) / 60000 >= (PRESETS[i.harita] || 3) * 2.1);
             if(viable.length > 0) {
                 panel.classList.remove('hidden');
                 list.innerHTML = viable.slice(0, 3).map((v, idx) => `
-                    <div class="bg-slate-800 border border-amber-500/30 p-2 rounded text-[10px] shadow-lg">
+                    <div class="bg-slate-800 border border-blue-500/30 p-2 rounded text-[10px] shadow-lg">
                         <b class="text-white">${idx+1}. ${v.harita}</b> <span class="text-slate-500">(${v.isim})</span>
                     </div>
                 `).join('<span class="text-amber-900 mx-2 font-bold">➜</span>');
@@ -167,13 +161,13 @@
             const btn = document.getElementById('btn_submit');
             btn.innerText = "..."; btn.disabled = true;
 
-            const mapName = document.getElementById('in_harita').value;
-            const mDist = parseInt(document.getElementById('in_mesafe').value);
-            if (mDist) DIST_DB[mapName] = mDist;
+            const map = document.getElementById('in_harita').value;
+            const distVal = parseInt(document.getElementById('in_mesafe').value);
+            if(distVal) PRESETS[map] = distVal;
 
             const payload = {
                 isim: document.getElementById('in_isim').value,
-                harita: mapName,
+                harita: map,
                 bitis_zamani: new Date(Date.now() + document.getElementById('in_dakika').value * 60000).toISOString()
             };
 
@@ -183,7 +177,7 @@
                 e.target.reset();
                 load();
             } catch (e) { alert("Hata: " + e.message); }
-            finally { btn.innerText = "İŞLE"; btn.disabled = false; }
+            finally { btn.innerText = "İşle"; btn.disabled = false; }
         });
 
         async function del(id) { if(confirm("Silinsin mi?")) { await sb.from(TABLE).delete().eq('id', id); load(); } }
