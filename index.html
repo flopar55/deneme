@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ALBION RADAR | V6.0 DYNAMIC MAPS</title>
+    <title>ALBION RADAR | V6.1 A2D INTEGRATION</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -11,19 +11,20 @@
         .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid #334155; }
         .priority-row { border-left: 4px solid #f59e0b; transition: all 0.2s; }
         .selected-row { background: rgba(59, 130, 246, 0.15) !important; border-left-color: #3b82f6 !important; }
-        .dev-banner { background-color: #0369a1; color: white; text-align: center; font-size: 0.75rem; padding: 0.25rem; font-weight: bold; }
+        .dev-banner { background-color: #047857; color: white; text-align: center; font-size: 0.75rem; padding: 0.25rem; font-weight: bold; }
         input[type="checkbox"] { cursor: pointer; accent-color: #f59e0b; width: 16px; height: 16px; }
-        ::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
+        .map-link { color: #60a5fa; transition: color 0.2s; }
+        .map-link:hover { color: #f59e0b; text-decoration: underline; }
     </style>
 </head>
 <body class="font-sans">
 
-    <div class="dev-banner">🚀 V6.0: DİNAMİK HARİTA KAYIT SİSTEMİ AKTİF</div>
+    <div class="dev-banner">🌐 V6.1: ALBION2D CANLI BAĞLANTI VE AKILLI HAFIZA AKTİF</div>
 
     <div class="max-w-7xl mx-auto p-4 md:p-8">
         <header class="mb-8 text-center">
             <h1 class="text-3xl font-bold text-amber-500 mb-2">⚔️ Albion Objective Tracker</h1>
-            <p class="text-xs text-slate-500 uppercase tracking-widest font-bold">Dynamic Map Engine & Bulk Control</p>
+            <p class="text-xs text-slate-500 uppercase tracking-widest font-bold font-mono">Live Navigation System</p>
         </header>
 
         <div class="glass-panel p-6 rounded-xl mb-6 border-t-4 border-t-amber-600 shadow-2xl">
@@ -33,12 +34,15 @@
                     <input type="text" id="in_isim" list="full-obj-list" placeholder="8.4 Hide" required class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white text-sm outline-none focus:border-amber-500">
                 </div>
                 <div>
-                    <label class="block mb-1 text-[10px] text-slate-400 uppercase font-bold">Harita (Map)</label>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-[10px] text-slate-400 uppercase font-bold">Harita (Map)</label>
+                        <button type="button" onclick="openA2D()" class="text-[9px] text-blue-400 hover:text-amber-500 font-bold underline">📍 SİTEDE GÖR</button>
+                    </div>
                     <input type="text" id="in_harita" list="comprehensive-map-list" oninput="autoDetect()" placeholder="Harita adı..." required class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white text-sm outline-none focus:border-amber-500">
                 </div>
                 <div>
-                    <label class="block mb-1 text-[10px] text-amber-500 uppercase font-bold">Mesafe (Nodes)</label>
-                    <input type="number" id="in_mesafe" placeholder="Map Count" min="1" class="w-full bg-slate-900 border border-amber-600/50 rounded p-2 text-white text-sm font-bold outline-none">
+                    <label class="block mb-1 text-[10px] text-amber-500 uppercase font-bold">Uzaklık (Nodes)</label>
+                    <input type="number" id="in_mesafe" placeholder="Node Sayısı" min="1" class="w-full bg-slate-900 border border-amber-600/50 rounded p-2 text-white text-sm font-bold outline-none">
                 </div>
                 <div>
                     <label class="block mb-1 text-[10px] text-slate-400 uppercase font-bold">Dakika Kaldı</label>
@@ -46,16 +50,11 @@
                 </div>
                 <button type="submit" id="btn_submit" class="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 rounded h-[38px] text-sm uppercase transition-all shadow-lg">Ekle</button>
             </form>
-            <p class="text-[9px] text-slate-500 mt-2 italic">*Listede olmayan bir harita yazarsanız, sistem otomatik olarak hafızaya ekler.</p>
         </div>
 
-        <div id="bulk-controls" class="mb-4 flex items-center justify-between bg-blue-900/30 border border-blue-500/50 p-3 rounded-lg hidden transition-all">
-            <div class="text-sm text-blue-300 font-bold">
-                ⚡ <span id="selected-count">0</span> objektif seçildi
-            </div>
-            <button onclick="bulkDelete()" class="bg-red-600 hover:bg-red-500 text-white text-xs font-bold px-4 py-2 rounded uppercase transition-all shadow-lg">
-                Seçilenleri Sil
-            </button>
+        <div id="bulk-controls" class="mb-4 flex items-center justify-between bg-blue-900/30 border border-blue-500/50 p-3 rounded-lg hidden">
+            <div class="text-sm text-blue-300 font-bold">⚡ <span id="selected-count">0</span> seçildi</div>
+            <button onclick="bulkDelete()" class="bg-red-600 hover:bg-red-500 text-white text-xs font-bold px-4 py-2 rounded uppercase transition-all shadow-lg">Seçilenleri Sil</button>
         </div>
 
         <div class="glass-panel p-4 rounded-xl shadow-lg">
@@ -64,35 +63,24 @@
                     <thead>
                         <tr class="text-slate-500 text-[10px] uppercase font-bold">
                             <th class="p-3 w-10 text-center"><input type="checkbox" id="select-all" onclick="toggleAll(this)"></th>
-                            <th class="p-3">Objektif</th>
+                            <th class="p-3">İçerik</th>
                             <th class="p-3">Harita</th>
-                            <th class="p-3 text-amber-500">Uzaklık</th>
-                            <th class="p-3">Zaman</th>
+                            <th class="p-3 text-amber-500 text-center">Uzaklık</th>
+                            <th class="p-3">Kalan Süre</th>
                             <th class="p-3 text-right">İşlem</th>
                         </tr>
                     </thead>
-                    <tbody id="list-body">
-                        <tr><td colspan="6" class="text-center p-12 text-slate-600 italic font-bold">BAĞLANTI KURULUYOR...</td></tr>
-                    </tbody>
+                    <tbody id="list-body"></tbody>
                 </table>
             </div>
         </div>
     </div>
 
     <datalist id="full-obj-list">
-        <option value="4.4 Hide"></option><option value="5.4 Hide"></option><option value="6.4 Hide"></option><option value="7.4 Hide"></option><option value="8.4 Hide"></option>
-        <option value="4.4 Wood"></option><option value="5.4 Wood"></option><option value="6.4 Wood"></option><option value="7.4 Wood"></option><option value="8.4 Wood"></option>
-        <option value="4.4 Ore"></option><option value="5.4 Ore"></option><option value="6.4 Ore"></option><option value="7.4 Ore"></option><option value="8.4 Ore"></option>
-        <option value="4.4 Fiber"></option><option value="5.4 Fiber"></option><option value="6.4 Fiber"></option><option value="7.4 Fiber"></option><option value="8.4 Fiber"></option>
-        <option value="Green Core"></option><option value="Blue Core"></option><option value="Purple Core"></option><option value="Legendary Core"></option>
-        <option value="Small Outpost"></option><option value="Medium Outpost"></option><option value="Large Outpost"></option>
+        <option value="4.4 Hide"></option><option value="8.4 Hide"></option><option value="Purple Core"></option><option value="Legendary Vortex"></option>
     </datalist>
-
     <datalist id="comprehensive-map-list">
-        <option value="Windgrass Border"></option><option value="Windgrass Fields"></option><option value="Windgrass Gully"></option><option value="Windgrass Rill"></option><option value="Bleachskull Steppe"></option><option value="Bleachskull Desert"></option>
-        <option value="Sandmount Ascent"></option><option value="Sandmount Strand"></option><option value="Gravemound Cliffs"></option><option value="Gravemound Hills"></option><option value="Gravemound Brim"></option>
-        <option value="Highstone Loch"></option><option value="Highstone Plateau"></option><option value="Highstone Meadow"></option><option value="Razorrock Bank"></option><option value="Razorrock Passage"></option>
-        <option value="Arthur's Rest"></option><option value="Merlyn's Rest"></option><option value="Morgana's Rest"></option>
+        <option value="Grave of Memory"></option><option value="Windgrass Border"></option><option value="Windgrass Gully"></option><option value="Sandmount Ascent"></option><option value="Bleachskull Steppe"></option>
     </datalist>
 
     <script>
@@ -101,38 +89,42 @@
         const sb = supabase.createClient(S_URL, S_KEY);
         const TABLE = 'albion_content_tracker_deneme';
 
-        // Harita Veritabanı (İstediğin Bleachskull'lar eklendi)
-        const MAP_DATABASE = {
-            "Grave of Memory": 1, "Mudfoot Sump": 1, "Windgrass Border": 1,
-            "Windgrass Fields": 2, "Bleachskull Steppe": 2, "Cathedral of Light": 2,
-            "Gravemound Brim": 3, "Highstone Grassland": 3, "Bleachskull Desert": 3,
-            "Gravemound Cliffs": 4, "Highstone Plateau": 4, "Sandmount Strand": 5,
-            "Sandmount Ascent": 6, "Avalanche Incline": 7
+        // OTOMATİK HAFIZA SİSTEMİ (LocalStorage)
+        const MAP_MEMORY = JSON.parse(localStorage.getItem('albion_map_memory')) || {
+            "Grave of Memory": 1, "Windgrass Border": 1, "Bleachskull Steppe": 2, "Sandmount Ascent": 6
         };
 
         let items = [];
         let selectedIds = new Set();
 
+        function openA2D() {
+            const mapName = document.getElementById('in_harita').value;
+            if (mapName) {
+                // Harita ismini URL dostu yap (Boşlukları %20 yap)
+                const formattedName = encodeURIComponent(mapName);
+                window.open(`https://albiononline2d.com/en/map/${formattedName}`, '_blank');
+            } else {
+                window.open(`https://albiononline2d.com/en/map`, '_blank');
+            }
+        }
+
         function autoDetect() {
             const map = document.getElementById('in_harita').value;
-            if (MAP_DATABASE[map]) document.getElementById('in_mesafe').value = MAP_DATABASE[map];
+            if (MAP_MEMORY[map]) document.getElementById('in_mesafe').value = MAP_MEMORY[map];
         }
 
         async function load() {
-            try {
-                const { data, error } = await sb.from(TABLE).select('*');
-                if (error) throw error;
-                items = data.sort((a, b) => new Date(a.bitis_zamani) - new Date(b.bitis_zamani));
-                render();
-            } catch (e) { console.error(e); }
+            const { data } = await sb.from(TABLE).select('*');
+            items = data ? data.sort((a, b) => new Date(a.bitis_zamani) - new Date(b.bitis_zamani)) : [];
+            render();
         }
 
         function render() {
             const body = document.getElementById('list-body');
             body.innerHTML = '';
-            
             items.forEach(i => {
-                const node = MAP_DATABASE[i.harita] || 3;
+                const node = MAP_MEMORY[i.harita] || "?";
+                const travel = node !== "?" ? node * 2.1 : 10;
                 const left = (new Date(i.bitis_zamani) - new Date()) / 60000;
                 const isSelected = selectedIds.has(i.id);
                 
@@ -141,26 +133,20 @@
                 tr.innerHTML = `
                     <td class="p-3 text-center"><input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleSelect(${i.id}, this)"></td>
                     <td class="p-3 font-bold text-white uppercase text-xs">${i.isim}</td>
-                    <td class="p-3 text-slate-400 text-xs">${i.harita}</td>
-                    <td class="p-3 text-amber-500 text-[10px] font-bold">📍 ${node} Map</td>
+                    <td class="p-3 text-xs">
+                        <a href="https://albiononline2d.com/en/map/${encodeURIComponent(i.harita)}" target="_blank" class="map-link">📍 ${i.harita}</a>
+                    </td>
+                    <td class="p-3 text-amber-500 text-center text-[10px] font-bold italic">${node} Map</td>
                     <td class="p-3 font-mono text-amber-500 text-xs">${left > 0 ? Math.floor(left) + 'dk' : 'BİTTİ'}</td>
-                    <td class="p-3 text-right"><button onclick="del(${i.id})" class="text-red-500/40 hover:text-red-500 text-[10px] font-bold uppercase transition-all">Sil</button></td>
+                    <td class="p-3 text-right"><button onclick="del(${i.id})" class="text-red-500/50 hover:text-red-500 text-[10px] font-bold uppercase">Sil</button></td>
                 `;
                 body.appendChild(tr);
-
-                // Eğer harita listede yoksa, datalist'e anlık ekle (User Experience için)
-                if (!document.querySelector(`#comprehensive-map-list option[value="${i.harita}"]`)) {
-                    const opt = document.createElement('option');
-                    opt.value = i.harita;
-                    document.getElementById('comprehensive-map-list').appendChild(opt);
-                }
             });
             updateBulkUI();
         }
 
         function toggleSelect(id, el) {
-            if (el.checked) selectedIds.add(id);
-            else selectedIds.delete(id);
+            el.checked ? selectedIds.add(id) : selectedIds.delete(id);
             render();
         }
 
@@ -172,20 +158,14 @@
 
         function updateBulkUI() {
             const ctrl = document.getElementById('bulk-controls');
-            const count = document.getElementById('selected-count');
-            if (selectedIds.size > 0) {
-                ctrl.classList.remove('hidden');
-                count.innerText = selectedIds.size;
-            } else {
-                ctrl.classList.add('hidden');
-                document.getElementById('select-all').checked = false;
-            }
+            ctrl.classList.toggle('hidden', selectedIds.size === 0);
+            document.getElementById('selected-count').innerText = selectedIds.size;
         }
 
         async function bulkDelete() {
-            if (!confirm(`${selectedIds.size} objektif siliyorum?`)) return;
-            const { error } = await sb.from(TABLE).delete().in('id', Array.from(selectedIds));
-            if (!error) { selectedIds.clear(); load(); }
+            if (!confirm(`${selectedIds.size} objektif siliniyor?`)) return;
+            await sb.from(TABLE).delete().in('id', Array.from(selectedIds));
+            selectedIds.clear(); load();
         }
 
         document.getElementById('radar-form').addEventListener('submit', async (e) => {
@@ -196,8 +176,11 @@
             const map = document.getElementById('in_harita').value;
             const dist = parseInt(document.getElementById('in_mesafe').value);
             
-            // Yeni harita girildiyse hafızaya al
-            if(dist) MAP_DATABASE[map] = dist;
+            // YENİ: Hafızaya Kaydet (LocalStorage)
+            if(dist) {
+                MAP_MEMORY[map] = dist;
+                localStorage.setItem('albion_map_memory', JSON.stringify(MAP_MEMORY));
+            }
 
             const payload = {
                 isim: document.getElementById('in_isim').value,
@@ -206,8 +189,7 @@
             };
 
             await sb.from(TABLE).insert([payload]);
-            e.target.reset();
-            load();
+            e.target.reset(); load();
             btn.innerText = "Ekle"; btn.disabled = false;
         });
 
